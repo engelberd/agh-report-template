@@ -1,0 +1,84 @@
+\chapter{Background and cost model}
+\label{chap:background}
+
+\section{Notation}
+
+Let $D$ be a document composed of $n$ source files and let $p$ denote
+its page count. A build is a function that maps $D$ to a PDF; we write
+$T(D)$ for its wall-clock duration. The build is decomposed into a fixed
+cost $\alpha$ (format loading, package initialisation), a per-page
+typesetting cost $\beta$, and a per-run overhead $\gamma_k$ for the
+$k$-th pass.
+
+\begin{definition}[Warm cache]
+\label{def:warm}
+A build is \emph{warm} if every package, font and image required by $D$
+is already materialised on the worker that executes it. Otherwise the
+build is \emph{cold}.
+\end{definition}
+
+\section{A two-term model}
+
+Under \cref{def:warm} the total time of a $K$-pass build is the sum of
+the per-pass costs,
+%
+\begin{equation}
+  \label{eq:model}
+  T(p, K) \;=\; \alpha \;+\; \sum_{k=1}^{K}\bigl(\gamma_k + \beta_k\, p\bigr)
+  \;\approx\; \alpha + K\gamma + \beta p ,
+\end{equation}
+%
+where the approximation assumes that the per-page cost is stable across
+passes. The assumption holds well in practice because the second and
+later passes differ from the first only in the resolution of forward
+references.
+
+For incremental builds the model changes shape. Only the fraction
+$\rho \in [0,1]$ of pages touched since the previous build is
+re-typeset, so
+%
+\begin{align}
+  T_{\mathrm{inc}}(p, K) &= \alpha_{\mathrm{inc}} + K\gamma + \beta \rho p ,
+  \label{eq:inc} \\[2pt]
+  \rho &= \frac{\lvert \mathcal{P}_{\text{dirty}} \rvert}{p} ,
+  \qquad
+  \mathcal{P}_{\text{dirty}} = \bigl\{\, \pi \in D : h(\pi) \neq h'(\pi) \,\bigr\},
+  \label{eq:rho}
+\end{align}
+%
+with $h$ and $h'$ the content hashes before and after the edit.
+
+\begin{theorem}[Crossover]
+\label{thm:crossover}
+Caching outperforms incremental recompilation only while
+$\alpha - \alpha_{\mathrm{inc}} > \beta p\,(1-\rho)$. For fixed $\rho$
+the right-hand side grows linearly in $p$, so there exists a page count
+$p^{\star}$ beyond which incremental recompilation is always faster.
+\end{theorem}
+
+\begin{proof}
+Subtract \cref{eq:inc} from \cref{eq:model} and solve the resulting
+inequality for $p$. The $K\gamma$ terms cancel.
+\end{proof}
+
+\begin{lemma}
+\label{lem:bound}
+If $\rho \le \tfrac{1}{2}$ then $T_{\mathrm{inc}} \le \tfrac{1}{2}T + \alpha_{\mathrm{inc}}$.
+\end{lemma}
+
+\begin{keybox}[What the model predicts]
+\Cref{thm:crossover} says the advantage of a warm cache is a constant,
+while the advantage of incremental work grows with document size. Long
+documents should therefore favour incremental builds even when the cache
+is perfectly warm. \Cref{chap:results} tests exactly this.
+\end{keybox}
+
+\section{Related work}
+
+Build-time modelling for document systems borrows directly from the
+compiler literature, and the canonical description of the multi-pass
+structure that makes \cref{eq:model} necessary remains
+\autocite{knuth1984texbook,lamport1994latex}. Practical package-level
+detail is collected in \autocite{mittelbach2023companion}. Scheduling of
+shared build workers, which we treat as out of scope, is addressed by
+\textcite{example2026conference}.

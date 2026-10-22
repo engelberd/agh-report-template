@@ -1,0 +1,96 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+Typesetting systems are usually evaluated on the quality of their
+output. For a collaborative editor, however, the more decisive property
+is how long an author waits between pressing a key and seeing the
+result. That wait is what determines whether a writing session feels
+like editing a document or like submitting a job to a queue.
+
+\section{Motivation}
+
+A modern research document is rarely a single file written by a single
+person. It is a tree of included sections, a bibliography that is
+synchronised from a reference manager, a directory of generated figures,
+and a version history shared between several authors
+\autocite{wilson2014best}. Every one of those moving parts adds work to
+the build, and the build runs far more often than anyone reads the
+finished PDF.
+
+\begin{keybox}[Why latency dominates]
+In a two-hour writing session an author triggers on the order of
+\num{200} rebuilds but reads the full output perhaps twice. Reducing
+median build time from \qty{8}{\second} to \qty{1}{\second} gives back
+roughly \qty{23}{\minute} of that session.
+\end{keybox}
+
+\section{Scope and contributions}
+
+This report is deliberately narrow. It measures build time and nothing
+else: no rendering fidelity, no editor responsiveness, no network
+effects. Within that scope it makes three contributions.
+
+\begin{enumerate}
+  \item A benchmark harness that produces documents of controlled size
+        and structure, described in \cref{sec:harness}.
+  \item A comparison of three build strategies over eight document
+        sizes, reported in \cref{chap:results}.
+  \item A cost model, \cref{eq:model}, that predicts build time from
+        page count and cache state within \qty{9}{\percent}.
+\end{enumerate}
+
+\section{How to read this report}
+
+\Cref{chap:background} fixes notation and states the assumptions behind
+the cost model. \Cref{chap:method} describes the harness and the
+measurement protocol. \Cref{chap:results} presents the measurements, and
+\cref{chap:conclusion} discusses what generalises beyond our setup.
+Supporting material is in \cref{chap:appendix-a}.
+
+\begin{remark}
+Every number in this report was produced by the scripts in the
+repository that accompanies it. Re-running \texttt{make bench} should
+reproduce \cref{fig:latency} up to hardware differences.
+\end{remark}
+
+\section{Conventions}
+
+Symbols are introduced where they first appear and collected in
+\cref{tab:notation}. Times are wall-clock seconds measured inside the
+build worker; all other quantities are dimensionless.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Notation used throughout the report.}
+  \label{tab:notation}
+  \small
+  \begin{tabularx}{\textwidth}{@{}c L l@{}}
+    \toprule
+    \textbf{\sffamily Symbol} & \textbf{\sffamily Meaning} & \textbf{\sffamily Unit} \\
+    \midrule
+    $p$      & page count of the compiled document        & pages \\
+    $n$      & number of source files in the project      & files \\
+    $K$      & number of typesetting passes per build     & --- \\
+    $\alpha$ & fixed initialisation cost of a build       & s \\
+    $\beta$  & marginal typesetting cost per page         & s/page \\
+    $\gamma$ & per-pass overhead independent of $p$       & s \\
+    $\rho$   & fraction of pages changed since the last build & --- \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+A short note on the markup this template expects:
+
+\begin{description}
+  \item[Cross-references] Written with \texttt{cleveref}. Typing
+        \verb|\cref{tab:notation}| gives \cref{tab:notation}, with the
+        word \enquote{Table} supplied automatically, so renaming a
+        float never leaves a stale label behind.
+  \item[Citations] Written with \texttt{biblatex}. Typing
+        \verb|\autocite{key}| produces \autocite{perez2007ipython}; use
+        \verb|\textcite{key}| instead when the author should be part of
+        the sentence, as in \textcite{hunter2007matplotlib}.
+  \item[Units and numbers] Written with \texttt{siunitx}, so
+        \verb|\qty{1.4}{\second}| produces \qty{1.4}{\second} and stays
+        consistent across the whole document.
+\end{description}

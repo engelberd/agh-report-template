@@ -1,0 +1,299 @@
+% =====================================================================
+%  universityreport.sty
+%  A modern, fast-compiling academic report style for pdfLaTeX.
+%  ---------------------------------------------------------------
+%  Everything visual lives in this file. main.tex stays readable.
+%  The only things you normally need to touch are in SECTION 1.
+% =====================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{style/universityreport}[2026/09/15 v1.1 Modern academic report style]
+
+% ---------------------------------------------------------------------
+%  1. BRAND  --  change these and the whole report follows
+% ---------------------------------------------------------------------
+\RequirePackage{xcolor}
+\definecolor{accent}    {HTML}{4F46E5} % structure only: rules, numbers
+\definecolor{accentdark}{HTML}{3730A3} % external links
+\definecolor{ink}       {HTML}{111827} % body text and headings
+\definecolor{muted}     {HTML}{4B5563} % captions, dates, metadata (7:1 on white)
+\definecolor{faint}     {HTML}{9CA3AF} % decoration that carries no information
+\definecolor{hairline}  {HTML}{E5E7EB} % thin rules and ghost numerals
+\definecolor{surface}   {HTML}{F5F6FB} % tinted box backgrounds
+\definecolor{success}   {HTML}{0F766E} % examplebox
+\definecolor{warning}   {HTML}{B45309} % alertbox
+
+% ---------------------------------------------------------------------
+%  2. TEXT FONTS  --  pdfLaTeX only, no fontspec, so compilation is fast
+%     Body : Libertinus Serif   Headings : Fira Sans   Code : Fira Mono
+%     (The matching Libertinus maths is loaded in section 4, after
+%      amsmath, which is the order libertinust1math requires.)
+% ---------------------------------------------------------------------
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{libertinus}
+\RequirePackage[scaled=0.94]{FiraSans}
+\RequirePackage[scaled=0.82]{FiraMono}
+\RequirePackage{microtype}
+\RequirePackage[english]{babel}
+\RequirePackage[autostyle=true]{csquotes}
+
+% ---------------------------------------------------------------------
+%  3. PAGE GEOMETRY
+%     The measure is ~128 mm, about 72 characters per line, which is
+%     where sustained reading is most comfortable. The space that buys
+%     goes into a wide outer margin you can actually use -- see
+%     \sidenote and the widefigure environment in section 12.
+% ---------------------------------------------------------------------
+\RequirePackage[a4paper,top=30mm,bottom=32mm,left=27mm,right=57mm,
+                headsep=15pt,headheight=23pt,footskip=26pt,
+                marginparwidth=38mm,marginparsep=7mm]{geometry}
+\RequirePackage{setspace}
+\setstretch{1.08}
+\setlength{\emergencystretch}{2em}  % soak up the odd overfull line
+\widowpenalty=10000                % never strand a line at the top
+\clubpenalty=10000                 % or at the bottom of a page
+\raggedbottom
+
+% ---------------------------------------------------------------------
+%  4. MATHS AND CORE PACKAGES
+% ---------------------------------------------------------------------
+\RequirePackage{amsmath,amsthm}
+\RequirePackage{mathtools}
+% Libertinus maths, so symbols match the body text instead of falling
+% back to Computer Modern. It supplies the AMS symbols itself, so
+% amssymb must NOT be loaded alongside it.
+\RequirePackage{libertinust1math}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{siunitx}
+\RequirePackage{enumitem}
+\RequirePackage{titlesec}
+\RequirePackage{fancyhdr}
+\RequirePackage{marginnote}
+\RequirePackage{accsupp}
+\RequirePackage[font=small,labelfont={bf,color=ink},
+                labelsep=period,justification=raggedright,
+                singlelinecheck=false]{caption}
+\RequirePackage{subcaption}
+\RequirePackage{tcolorbox}
+\RequirePackage{listings}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\RequirePackage{pgfplotstable}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,backgrounds}
+\pgfplotsset{compat=1.18}
+
+% ---------------------------------------------------------------------
+%  5. HEADINGS
+%     Accent colour is reserved for structure: the ghost numeral, the
+%     short rule, the section numbers. Running text stays black.
+% ---------------------------------------------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\sffamily\color{ink}}
+  {\hfill\fontsize{64}{64}\selectfont\bfseries\color{hairline}\thechapter}
+  {-14pt}
+  {\raggedright\fontsize{24}{28}\selectfont\bfseries}
+  [\vspace{7pt}{\color{accent}\rule{22mm}{2pt}}]
+\titlespacing*{\chapter}{0pt}{-14pt}{26pt}
+
+\titleformat{\section}
+  {\normalfont\sffamily\bfseries\large\color{ink}}{\color{accent}\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\normalfont\sffamily\bfseries\normalsize\color{ink}}{\color{accent}\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}
+  {\normalfont\sffamily\bfseries\small\color{ink}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{18pt}{6pt}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+
+% ---------------------------------------------------------------------
+%  6. HEADERS AND FOOTERS
+% ---------------------------------------------------------------------
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{main}{%
+  \fancyhf{}%
+  \fancyhead[L]{\sffamily\footnotesize\color{muted}\nouppercase{\leftmark}}%
+  \fancyhead[R]{\sffamily\footnotesize\color{muted}\thepage}%
+  \renewcommand{\headrule}{\color{hairline}\rule{\headwidth}{0.4pt}}%
+  \renewcommand{\headrulewidth}{0.4pt}%
+}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\sffamily\footnotesize\color{muted}\thepage}%
+  \renewcommand{\headrule}{}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+\pagestyle{main}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter\quad #1}{}}
+
+% ---------------------------------------------------------------------
+%  7. LISTS, TABLES, FLOATS
+% ---------------------------------------------------------------------
+\setlist[itemize]{leftmargin=1.3em,itemsep=2pt,topsep=4pt,label=\textcolor{accent}{\textbullet}}
+\setlist[enumerate]{leftmargin=1.5em,itemsep=2pt,topsep=4pt}
+\setlist[description]{font=\sffamily\bfseries\color{ink},leftmargin=1.3em}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{7pt}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\sisetup{detect-weight=true,detect-family=true,table-align-text-after=false}
+
+% ---------------------------------------------------------------------
+%  8. CALLOUT BOXES AND THEOREMS
+%     One callout treatment, shared with the presentation template:
+%     a tinted panel with a coloured bar down the left edge.
+% ---------------------------------------------------------------------
+\newtcolorbox{keybox}[1][Key takeaway]{%
+  enhanced,breakable,colback=surface,colframe=accent,
+  boxrule=0pt,leftrule=2.5pt,arc=2pt,left=10pt,right=10pt,top=8pt,bottom=8pt,
+  fonttitle=\sffamily\bfseries\small\color{accent},
+  title={#1},attach title to upper=\par\medskip
+}
+
+% Same geometry, different colour. The presentation template uses this
+% exact treatment for its blocks, so a deck and its report match.
+\newtcolorbox{examplebox}[1][Example]{%
+  enhanced,breakable,colback=success!6,colframe=success,
+  boxrule=0pt,leftrule=2.6pt,arc=2pt,left=10pt,right=10pt,top=8pt,bottom=8pt,
+  fonttitle=\sffamily\bfseries\small\color{success},
+  title={#1},attach title to upper=\par\medskip}
+\newtcolorbox{alertbox}[1][Watch out]{%
+  enhanced,breakable,colback=warning!6,colframe=warning,
+  boxrule=0pt,leftrule=2.6pt,arc=2pt,left=10pt,right=10pt,top=8pt,bottom=8pt,
+  fonttitle=\sffamily\bfseries\small\color{warning},
+  title={#1},attach title to upper=\par\medskip}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+% ---------------------------------------------------------------------
+%  9. CODE LISTINGS
+% ---------------------------------------------------------------------
+\lstdefinestyle{clean}{
+  basicstyle=\ttfamily\footnotesize\color{ink},
+  keywordstyle=\color{accentdark}\bfseries,
+  commentstyle=\color{muted}\itshape,
+  stringstyle=\color{accentdark},
+  numbers=left,numberstyle=\ttfamily\scriptsize\color{muted},numbersep=10pt,
+  backgroundcolor=\color{surface},frame=none,framexleftmargin=8pt,
+  xleftmargin=16pt,xrightmargin=4pt,
+  breaklines=true,showstringspaces=false,tabsize=2,
+  aboveskip=12pt,belowskip=10pt,
+}
+\lstset{style=clean}
+
+% ---------------------------------------------------------------------
+% 10. BIBLIOGRAPHY  (biblatex + biber)
+%     Switch style=numeric-comp to style=authoryear for humanities.
+% ---------------------------------------------------------------------
+\RequirePackage[backend=biber,style=numeric-comp,sorting=nyt,
+                giveninits=true,maxbibnames=6,minbibnames=6,
+                isbn=false,url=false,doi=true]{biblatex}
+\renewcommand*{\bibfont}{\small}
+\setlength{\bibitemsep}{0.55em}
+\DeclareFieldFormat{titlecase}{#1}
+
+% ---------------------------------------------------------------------
+% 11. LINKS AND CROSS-REFERENCES  (hyperref late, cleveref last)
+%     Internal references are black: a page speckled with coloured
+%     cross-references is tiring to read and collapses in greyscale
+%     print. Only genuine external links carry colour.
+%     To colour internal links instead, set linkcolor=accentdark below.
+% ---------------------------------------------------------------------
+\RequirePackage[hidelinks]{hyperref}
+\hypersetup{colorlinks=true,linkcolor=ink,citecolor=ink,urlcolor=accentdark,
+            breaklinks=true,pdfborder={0 0 0},pdflang={en-GB}}
+\urlstyle{same}
+\RequirePackage[nameinlink,capitalise]{cleveref}
+
+% ---------------------------------------------------------------------
+% 12. MARGIN NOTES AND WIDE FLOATS
+%     The outer margin is wide on purpose. \sidenote puts a short
+%     remark there; widefigure lets a figure use the margin too.
+% ---------------------------------------------------------------------
+\renewcommand*{\marginfont}{\sffamily\footnotesize\color{muted}}
+\newcommand{\sidenote}[1]{\marginnote{\raggedright #1}}
+
+\newlength{\fullwidth}
+\setlength{\fullwidth}{\dimexpr\textwidth+\marginparsep+\marginparwidth\relax}
+% \hss soaks up the deliberate overhang into the margin, so TeX does
+% not report it as an overfull box.
+\newenvironment{widefigure}[1][htbp]
+  {\begin{figure}[#1]\noindent
+   \hbox to \textwidth\bgroup
+   \begin{minipage}{\fullwidth}\centering}
+  {\end{minipage}\hss\egroup\end{figure}}
+
+% ---------------------------------------------------------------------
+% 13. TITLE PAGE
+%     Set the metadata in main.tex, then call \makecoverpage
+% ---------------------------------------------------------------------
+\newcommand{\reporttitle}[1]{\def\@reporttitle{#1}}
+\newcommand{\reportsubtitle}[1]{\def\@reportsubtitle{#1}}
+\newcommand{\reportauthor}[1]{\def\@reportauthor{#1}}
+\newcommand{\reportmeta}[1]{\def\@reportmeta{#1}}
+\newcommand{\reportinstitution}[1]{\def\@reportinstitution{#1}}
+\newcommand{\reportdate}[1]{\def\@reportdate{#1}}
+\newcommand{\reportlogo}[1]{\def\@reportlogo{#1}}
+\reporttitle{Report title}\reportsubtitle{}\reportauthor{Author}
+\reportmeta{}\reportinstitution{}\reportdate{\today}\reportlogo{}
+
+% Carry the metadata into the PDF properties, so the file identifies
+% itself in a reader, a library catalogue or a screen reader.
+\AtBeginDocument{%
+  \hypersetup{pdftitle={\@reporttitle},pdfauthor={\@reportauthor},
+              pdfsubject={\@reportsubtitle},pdfcreator={pdfLaTeX}}%
+}
+
+\newcommand{\makecoverpage}{%
+  \begin{titlepage}
+  \thispagestyle{empty}
+  \sffamily\color{ink}
+  \noindent\ifx\@reportlogo\@empty\else\includegraphics[height=15mm]{\@reportlogo}\fi
+
+  \vspace{52mm}
+
+  \noindent{\color{accent}\rule{46mm}{2.4pt}}\par\vspace{9mm}
+
+  \begingroup\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000
+  \noindent{\fontsize{30}{36}\selectfont\bfseries\@reporttitle\par}\endgroup
+  \ifx\@reportsubtitle\@empty\else
+    \vspace{5mm}\begingroup\raggedright
+    \noindent{\fontsize{15}{20}\selectfont\color{muted}\@reportsubtitle\par}\endgroup
+  \fi
+
+  \vspace{34mm}
+
+  \noindent\begin{tabular}{@{}l@{}}
+    {\normalsize\bfseries\@reportauthor}\\[3pt]
+    {\footnotesize\color{muted}\@reportinstitution}\\[1pt]
+    {\footnotesize\color{muted}\@reportmeta}\\[1pt]
+    {\footnotesize\color{muted}\@reportdate}
+  \end{tabular}
+  \par\vspace{6mm}
+  \noindent{\color{hairline}\rule{\textwidth}{0.8pt}}
+  \vfill
+  \end{titlepage}
+  \rmfamily
+}
+
+% ---------------------------------------------------------------------
+% 14. SMALL HELPERS
+% ---------------------------------------------------------------------
+% Front matter: roman page numbers, no running head.
+\newcommand{\frontmatterpages}{\clearpage\pagenumbering{roman}\pagestyle{plain}}
+% Main matter: arabic page numbers restart at 1, running head returns.
+\newcommand{\mainmatterpages}{\clearpage\pagenumbering{arabic}\pagestyle{main}}
+% Letterspaced text that still copies and reads back as one word.
+\newcommand{\tracked}[1]{\BeginAccSupp{method=escape,ActualText={#1}}%
+  \textls[180]{#1}\EndAccSupp{}}
+\newcommand{\todo}[1]{\textcolor{accentdark}{\sffamily\bfseries[TODO: #1]}}
+\providecommand{\diff}{\mathop{}\!\mathrm{d}}
+\endinput
