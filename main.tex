@@ -1,54 +1,44 @@
-% =====================================================================
-%  ACADEMIC REPORT  --  template for inscrive.io
-%  ---------------------------------------------------------------
-%  Engine   : pdfLaTeX          Bibliography : biber
-%  Structure: main.tex holds metadata only. Text lives in content/,
-%             all design lives in style/universityreport.sty.
-%
-%  To make this yours:
-%    1. Replace figures/logo-placeholder.pdf with your institution logo.
-%    2. Edit the brand colours in style/universityreport.sty (section 1).
-%    3. Fill in the metadata block below and start writing in content/.
-% =====================================================================
-\documentclass[12pt,a4paper,oneside]{report}
-
+% AGH laboratory report. Engine: pdfLaTeX; bibliography: Biber.
+% Content lives in content/, presentation in style/universityreport.sty.
+\documentclass[11pt,a4paper,oneside]{article}
 \usepackage{style/universityreport}
 \addbibresource{references.bib}
 
-% ---------------------------------------------------------------------
-%  METADATA  --  everything on the cover page comes from here
-% ---------------------------------------------------------------------
-\reporttitle      {Measuring Compilation Latency in Collaborative Document Systems}
-\reportsubtitle   {A reproducible benchmark of build pipelines for large multi-author projects}
-\reportauthor     {A. N. Author}
-\reportinstitution{Your University \textperiodcentered\ Faculty or Department}
-\reportmeta       {Supervisor: Prof.\ B. C. Supervisor}
-\reportdate       {\today}
-\reportlogo       {figures/logo-placeholder.pdf}
+% Required metadata. Keep plain text in title and author for PDF properties.
+\reportinstitution{Akademia Górniczo-Hutnicza im. Stanisława Staszica w Krakowie}
+\reportfaculty{Wydział Inżynierii Mechanicznej i Robotyki}
+\reportprogramme{Inżynieria Akustyczna}
+\reportcourse{Nazwa przedmiotu}
+\reporttitle{Pomiar poziomu ciśnienia akustycznego}
+\reportlabnumber{1}
+\reportauthor{Imię Nazwisko, Imię Nazwisko}
+\reportgroup{Grupa 1}
+\reportinstructor{Tytuł, imię i nazwisko}
+\reportdate{\today} % Date of exercise/submission: replace when needed.
+
+% Optional metadata; empty values are hidden.
+\reportlogo{figures/agh_small.jpg}
+\reporttype{Sprawozdanie laboratoryjne} % Or: Raport techniczny
+\reportsubtitle{}
+\reportsemester{}
+\reportmeta{}
 
 \begin{document}
-
 \makecoverpage
+% For longer technical reports, uncomment the optional elements:
+% \input{content/00-abstract}
+% \tableofcontents
 
-% ---------------------------------------------------------------------
-\frontmatterpages
-\input{content/00-abstract}
-\tableofcontents
-\cleardoublepage
+\input{content/01-cel}
+\input{content/02-teoria}
+\input{content/03-aparatura}
+\input{content/04-metodyka}
+\input{content/05-wyniki}
+\input{content/06-niepewnosc}
+\input{content/07-wnioski}
+\printbibliography[heading=bibintoc,title={Literatura}]
 
-% ---------------------------------------------------------------------
-\mainmatterpages
-\input{content/01-introduction}
-\input{content/02-background}
-\input{content/03-method}
-\input{content/04-results}
-\input{content/05-conclusion}
-
-% ---------------------------------------------------------------------
-\printbibliography[heading=bibintoc,title={References}]
-
-% ---------------------------------------------------------------------
-\appendix
-\input{content/appendix-a}
-
+% Optional supplementary material:
+% \appendix
+% \input{content/appendix-a}
 \end{document}

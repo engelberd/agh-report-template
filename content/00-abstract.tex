@@ -1,28 +1,5 @@
-% ---------------------------------------------------------------------
-%  Abstract  --  unnumbered, but listed in the table of contents
-% ---------------------------------------------------------------------
-\chapter*{Abstract}
-\addcontentsline{toc}{chapter}{Abstract}
-\markboth{Abstract}{}
-
-\begingroup
-\setlength{\leftskip}{0pt}\noindent
-Collaborative writing platforms rebuild a document every time an author
-pauses typing, which makes compilation latency the single most visible
-performance characteristic of the system. This report presents a
-reproducible benchmark of three build strategies -- a cold baseline, a
-warm package cache, and incremental recompilation -- measured across
-documents of \numrange{20}{160} pages. We find that incremental
-recompilation keeps median build time below \qty{1.4}{\second} even for
-the largest documents, an order of magnitude faster than the cold
-baseline, and that the crossover point where caching stops paying off
-occurs at roughly 60 pages. We close with a short discussion of what
-these numbers mean for multi-author projects and how the measurement
-harness can be reused.
-\endgroup
-
-\vspace{6mm}
-\noindent\textbf{\sffamily Keywords:}\enspace
-compilation latency \textperiodcentered\ reproducible builds
-\textperiodcentered\ collaborative editing \textperiodcentered\
-document engineering
+% Optional: enable in main.tex for a longer technical report.
+\section*{Streszczenie}
+\addcontentsline{toc}{section}{Streszczenie}
+Krótko opisać cel, zastosowaną metodę, najważniejszy wynik
+oraz wniosek końcowy. Uzupełnić po napisaniu raportu.
